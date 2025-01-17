@@ -3,6 +3,7 @@ import sys
 import os
 
 BLACK = pygame.Color(0, 0, 0)
+WHITE = pygame.Color(255, 255, 255)
 SIZE = WIDTH, HEIGHT = (500, 500)
 FPS = 60
 
@@ -25,17 +26,20 @@ def load_image(name, colorkey=None):
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["TURNINGLIGHTS", "",
+                  "Правила игры", "",
+                  "Вам необходимо успеть зажечь все лампочки,",
+                  "для этого нажимайте на стрелочки",
+                  "(в зависимостиот того, где находится лампочка.",
+                  "За сбор монеток вы получите",
+                  "секретное сообщение!", "", "Удачи!"]
 
-    fon = pygame.transform.scale(load_image('bg.jpg'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(load_image('bg.jpeg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, BLACK)
+        string_rendered = font.render(line, 1, WHITE)
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -148,8 +152,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         self.pos_x = pos_x
         self.pos_y = pos_y
-        self.px = pos_x
-        self.py = pos_y
+        self.x = pos_x
+        self.y = pos_y
         super().__init__(player_group, all_sprites)
         self.image = player_image
         self.rect = self.image.get_rect().move(
@@ -157,98 +161,34 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, key):
         delta_x, delta_y = 0, 0
-        d_1, d_2 = 0, 0
-        print(self.pos_x, self.pos_y)
+        d_x, d_y = 0, 0
         if key == pygame.K_UP:
             delta_x, delta_y = 0, -tile_height
-            d_1, d_2 = 0, -1
+            d_x, d_y = 0, -1
         if key == pygame.K_DOWN:
             delta_x, delta_y = 0, tile_height
-            d_1, d_2 = 0, 1
+            d_x, d_y = 0, 1
         if key == pygame.K_LEFT:
             delta_x, delta_y = -tile_height, 0
-            d_1, d_2 = -1, 0
+            d_x, d_y = -1, 0
         if key == pygame.K_RIGHT:
             delta_x, delta_y = tile_height, 0
-            d_1, d_2 = 1, 0
+            d_x, d_y = 1, 0
         self.rect = self.rect.move(delta_x, delta_y)
-
-        self.pos_x += d_1
-        self.pos_y += d_2
-        # print(self.pos_x, self.pos_y)
-        if key == pygame.K_z:
-            print(1)
-            # check up
-
-            delta_x, delta_y = 0, -tile_height
-            d_1, d_2 = 0, -1
-            self.pos_x += d_1
-            self.pos_y += d_2
-            self.rect = self.rect.move(delta_x, delta_y)
-            if pygame.sprite.spritecollideany(self, lamp_group):
-                print(2)
-                print(self.pos_x, self.pos_y)
-                Tile('empty', self.pos_x, self.pos_y)
-                CompletedLamp('object2', self.pos_x, self.pos_y)
-                self.rect = self.rect.move(-delta_x, -delta_y)
-            else:
-                self.rect = self.rect.move(-delta_x, -delta_y)
-                # check down
-                delta_x, delta_y = 0, tile_height
-                d_1, d_2 = 0, 1
-                self.pos_x += d_1
-                self.pos_y += d_2
-                self.rect = self.rect.move(delta_x, delta_y)
-                if pygame.sprite.spritecollideany(self, lamp_group):
-                    print(2)
-                    print(self.pos_x, self.pos_y)
-                    Tile('empty', self.pos_x, self.pos_y)
-                    CompletedLamp('object2', self.pos_x, self.pos_y)
-                    self.rect = self.rect.move(-delta_x, -delta_y)
-                else:
-                    self.rect = self.rect.move(-delta_x, -delta_y)
-                    # check left
-                    d_1, d_2 = -1, 0
-                    self.pos_x += d_1
-                    self.pos_y += d_2
-                    self.rect = self.rect.move(delta_x, delta_y)
-                    if pygame.sprite.spritecollideany(self, lamp_group):
-                        print(2)
-                        print(self.pos_x, self.pos_y)
-                        Tile('empty', self.pos_x, self.pos_y)
-                        CompletedLamp('object2', self.pos_x, self.pos_y)
-                        self.rect = self.rect.move(-delta_x, -delta_y)
-                    else:
-                        self.rect = self.rect.move(-delta_x, -delta_y)
-                        # check right
-                        d_1, d_2 = 1, 0
-                        self.pos_x += d_1
-                        self.pos_y += d_2
-                        self.rect = self.rect.move(delta_x, delta_y)
-                        if pygame.sprite.spritecollideany(self, lamp_group):
-                            print(2)
-                            print(self.pos_x, self.pos_y)
-                            Tile('empty', self.pos_x, self.pos_y)
-                            CompletedLamp('object2', self.pos_x, self.pos_y)
-                            self.rect = self.rect.move(-delta_x, -delta_y)
-                        else:
-                            self.rect = self.rect.move(-delta_x, -delta_y)
-
-            delta_x, delta_y = 0, 0
-            self.pos_x -= d_1
-            self.pos_y -= d_2
+        self.pos_x += d_x
+        self.pos_y += d_y
+        print(self.pos_x, self.pos_y)
         if pygame.sprite.spritecollideany(self, box_group):
             self.rect = self.rect.move(-delta_x, -delta_y)
-            self.px -= delta_x
-            self.py -= delta_y
-            self.pos_x -= d_1
-            self.pos_y -= d_2
+            self.pos_x -= d_x
+            self.pos_y -= d_y
         if pygame.sprite.spritecollideany(self, lamp_group):
+            Tile('empty', self.pos_x, self.pos_y)
+            CompletedLamp('object2', self.pos_x, self.pos_y)
+            print(self.pos_x, self.pos_y)
             self.rect = self.rect.move(-delta_x, -delta_y)
-            self.px -= delta_x
-            self.py -= delta_y
-            self.pos_x -= d_1
-            self.pos_y -= d_2
+            self.pos_x -= d_x
+            self.pos_y -= d_y
 
 
 player = None
