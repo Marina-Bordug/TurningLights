@@ -1,9 +1,11 @@
 import pygame
 import sys
 import os
+import math
 
 BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
+YELLOW = pygame.Color(255, 228, 181)
 SIZE = WIDTH, HEIGHT = (500, 500)
 FPS = 60
 
@@ -17,7 +19,7 @@ def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
     if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
+        # print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
     image = pygame.image.load(fullname)
     return image
@@ -58,6 +60,60 @@ def start_screen():
         clock.tick(FPS)
 
 
+def end_screen():
+    end_text = ["Проигрышь!", "Попробуйте ещё раз!"]
+
+    fon = pygame.transform.scale(load_image('bg.jpeg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    # font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in end_text:
+        string_rendered = font.render(line, 1, WHITE)
+        end_rect = string_rendered.get_rect()
+        text_coord += 10
+        end_rect.top = text_coord
+        end_rect.x = 10
+        text_coord += end_rect.height
+        screen.blit(string_rendered, end_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                terminate()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def win_screen():
+    end_text = ["Поздравляем!!!", "Вы прошли игру!!!", f"Количество секретных монет: {len(coins_grop)}"]
+
+    fon = pygame.transform.scale(load_image('bg.jpeg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    # font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in end_text:
+        string_rendered = font.render(line, 1, WHITE)
+        end_rect = string_rendered.get_rect()
+        text_coord += 10
+        end_rect.top = text_coord
+        end_rect.x = 10
+        text_coord += end_rect.height
+        screen.blit(string_rendered, end_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                terminate()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 def load_level(filename):
     # filename = "data/" + filename
     with open(filename, 'r') as mapFile:
@@ -79,6 +135,9 @@ def generate_level(level):
             elif level[y][x] == '&':
                 Tile('empty', x, y)
                 Lamp('object', x, y)
+            elif level[y][x] == '*':
+                Tile('empty', x, y)
+                Coin('coin', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
                 playerx, playery = x, y
@@ -87,11 +146,13 @@ def generate_level(level):
     return new_player, x, y
 
 
+
 tile_images = {
     'wall': load_image('box.png'),
     'empty': load_image('grass.png'),
     'object': load_image('light-off.png'),
-    'object2': load_image('light-on.png')
+    'object2': load_image('light-on.png'),
+    'coin': load_image('coin.png')
 }
 
 player_image = load_image('mar.png')
@@ -140,6 +201,14 @@ class Lamp(pygame.sprite.Sprite):
             tile_width * pos_x, tile_height * pos_y)
 
 
+class Coin(pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(coins_grop, all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+
+
 class CompletedLamp(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
         super().__init__(c_lamp_group, all_sprites)
@@ -177,18 +246,22 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.rect.move(delta_x, delta_y)
         self.pos_x += d_x
         self.pos_y += d_y
-        print(self.pos_x, self.pos_y)
+        # print(self.pos_x, self.pos_y)
         if pygame.sprite.spritecollideany(self, box_group):
             self.rect = self.rect.move(-delta_x, -delta_y)
             self.pos_x -= d_x
             self.pos_y -= d_y
         if pygame.sprite.spritecollideany(self, lamp_group):
-            Tile('empty', self.pos_x, self.pos_y)
-            CompletedLamp('object2', self.pos_x, self.pos_y)
-            print(self.pos_x, self.pos_y)
-            self.rect = self.rect.move(-delta_x, -delta_y)
-            self.pos_x -= d_x
-            self.pos_y -= d_y
+            if pygame.sprite.spritecollideany(self, c_lamp_group):
+                self.rect = self.rect.move(-delta_x, -delta_y)
+                self.pos_x -= d_x
+                self.pos_y -= d_y
+            else:
+                Tile('empty', self.pos_x, self.pos_y)
+                CompletedLamp('object2', self.pos_x, self.pos_y)
+                self.rect = self.rect.move(-delta_x, -delta_y)
+                self.pos_x -= d_x
+                self.pos_y -= d_y
 
 
 player = None
@@ -201,24 +274,60 @@ lamp_group = pygame.sprite.Group()
 c_lamp_group = pygame.sprite.Group()
 box_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
+coins_grop = pygame.sprite.Group()
 clock = pygame.time.Clock()
+mapp = 1
 player, level_x, level_y = generate_level(load_level('data/map.txt'))
+font = pygame.font.SysFont(None, 35)
+timer = 20
+arc_timer = 100
+text = font.render(str(timer), True, WHITE)
+
+timer_event = pygame.USEREVENT+1
+pygame.time.set_timer(timer_event, 1000)
+
+
+def drawArc(surf, color, center, radius, width, end_angle):
+    arc_rect = pygame.Rect(0, 0, radius*2, radius*2)
+    arc_rect.center = center
+    pygame.draw.arc(surf, color, arc_rect, 0, end_angle, width)
+
 
 start_screen()
+
 # GAME ----------
 while True:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: terminate()
-        if event.type == pygame.KEYDOWN:
-            player.move(event.key)
-    # camera.update(player)
-    for sprite in all_sprites:
-        pass
-        # camera.apply(sprite)
+        if event.type == pygame.KEYDOWN: player.move(event.key)
+        if event.type == timer_event:
+            timer -= 1
+            arc_timer -= 5
+            text = font.render(str(timer), True, WHITE)
+            if timer == 0 and len(c_lamp_group) != len(lamp_group):
+                end_screen()
+            elif timer == 0:
+                mapp += 1
+                if mapp != 6:
+                    all_sprites = pygame.sprite.Group()
+                    lamp_group = pygame.sprite.Group()
+                    c_lamp_group = pygame.sprite.Group()
+                    box_group = pygame.sprite.Group()
+                    player_group = pygame.sprite.Group()
+                    coins_grop = pygame.sprite.Group()
+                    player, level_x, level_y = generate_level(load_level(f'data/map{mapp}.txt'))
+                    timer = 20
+                    arc_timer = 100
+                    screen.blit(text, (16, 18))
+                    drawArc(screen, YELLOW, (32, 32), 32, 5, 2 * math.pi * arc_timer / 100)
+                else:
+                    win_screen()
     screen.fill(BLACK)
     all_sprites.draw(screen)
     all_sprites.update()
+    screen.blit(text, (16, 18))
+    drawArc(screen, YELLOW, (32, 32), 32, 5, 2 * math.pi * arc_timer / 100)
     pygame.display.flip()
 
 # pygame.quit()
