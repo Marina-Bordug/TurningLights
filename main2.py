@@ -3,28 +3,13 @@ import sys
 import os
 import math
 
+from basic_functions import terminate, load_image, load_level, load_sprites
+
 BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
 YELLOW = pygame.Color(255, 228, 181)
 SIZE = WIDTH, HEIGHT = (500, 500)
 FPS = 60
-
-
-def terminate():
-    pygame.quit()
-    sys.exit()
-
-
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
-    if not os.path.isfile(fullname):
-        # print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
-    image = pygame.image.load(fullname)
-    return image
-
-# MENU -----------
 
 
 def start_screen():
@@ -114,14 +99,6 @@ def win_screen():
         clock.tick(FPS)
 
 
-def load_level(filename):
-    # filename = "data/" + filename
-    with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
-    max_width = max(map(len, level_map))
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
-
-
 # отрисовка
 def generate_level(level):
     new_player, x, y = None, None, None
@@ -141,40 +118,26 @@ def generate_level(level):
             elif level[y][x] == '@':
                 Tile('empty', x, y)
                 playerx, playery = x, y
+    # sprite_sheet = pygame.image.load("rey.png").convert_alpha()
+
     new_player = Player(playerx, playery)
 
     return new_player, x, y
 
 
-
 tile_images = {
     'wall': load_image('box.png'),
-    'empty': load_image('grass.png'),
+    'empty': load_image('floor.png'),
     'object': load_image('light-off.png'),
     'object2': load_image('light-on.png'),
     'coin': load_image('coin.png')
 }
 
-player_image = load_image('mar.png')
+# player_image = load_image('mar.png')
+
 
 tile_width = tile_height = 50
 
-
-# class Camera:
-#     # зададим начальный сдвиг камеры
-#     def __init__(self):
-#         self.dx = 0
-#         self.dy = 0
-#
-#     # сдвинуть объект obj на смещение камеры
-#     def apply(self, obj):
-#         obj.rect.x += self.dx
-#         obj.rect.y += self.dy
-#
-#     # позиционировать камеру на объекте target
-#     def update(self, target):
-#         self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
-#         self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
 
 
 class Tile(pygame.sprite.Sprite):
@@ -217,30 +180,145 @@ class CompletedLamp(pygame.sprite.Sprite):
             tile_width * pos_x, tile_height * pos_y)
 
 
+sprite_sheet = pygame.image.load("rey.png")
+
+sprite_width = 44
+sprite_height = 48
+sprites = load_sprites(sprite_sheet, sprite_width, sprite_height)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
+        super().__init__(player_group, all_sprites)
+        self.images = sprites
+        self.index = 1
+        self.image = self.images[self.index]
+        self.animation_speed = 0.1
+        self.last_update = pygame.time.get_ticks()
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.x = pos_x
         self.y = pos_y
-        super().__init__(player_group, all_sprites)
-        self.image = player_image
+        # self.image = player_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5)
+
+    def update_down(self):
+        now = pygame.time.get_ticks()
+        self.index = 1
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 0:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 1:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 2:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 1:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+
+    def update_left(self):
+        now = pygame.time.get_ticks()
+        self.index = 4
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 3:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 4:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 5:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 4:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+
+    def update_right(self):
+        now = pygame.time.get_ticks()
+        self.index = 7
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 6:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 7:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 8:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 7:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+
+    def update_up(self):
+        now = pygame.time.get_ticks()
+        self.index = 10
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 9:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 10:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index += self.animation_speed
+            if self.index == 11:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+        if now - self.last_update > 10:
+            self.index -= self.animation_speed
+            if self.index == 10:
+                self.image = self.images[int(self.index)]
+                self.last_update = now
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
 
     def move(self, key):
         delta_x, delta_y = 0, 0
         d_x, d_y = 0, 0
         if key == pygame.K_UP:
+            self.update_up()
             delta_x, delta_y = 0, -tile_height
             d_x, d_y = 0, -1
         if key == pygame.K_DOWN:
+            self.update_down()
             delta_x, delta_y = 0, tile_height
             d_x, d_y = 0, 1
         if key == pygame.K_LEFT:
+            self.update_left()
             delta_x, delta_y = -tile_height, 0
             d_x, d_y = -1, 0
         if key == pygame.K_RIGHT:
+            self.update_right()
             delta_x, delta_y = tile_height, 0
             d_x, d_y = 1, 0
         self.rect = self.rect.move(delta_x, delta_y)
@@ -268,6 +346,8 @@ player = None
 # camera = Camera()
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
+pygame.display.set_caption("TurningLights")
+
 
 all_sprites = pygame.sprite.Group()
 lamp_group = pygame.sprite.Group()
@@ -329,5 +409,3 @@ while True:
     screen.blit(text, (16, 18))
     drawArc(screen, YELLOW, (32, 32), 32, 5, 2 * math.pi * arc_timer / 100)
     pygame.display.flip()
-
-# pygame.quit()
