@@ -3,13 +3,18 @@ import sys
 import os
 import math
 
+
 from basic_functions import terminate, load_image, load_level, load_sprites
 
+pygame.mixer.init()
 BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
 YELLOW = pygame.Color(255, 228, 181)
 SIZE = WIDTH, HEIGHT = (500, 500)
 FPS = 60
+sound = pygame.mixer.Sound("lamp-on-snd.wav")
+sound2 = pygame.mixer.Sound("level-done.wav")
+sound3 = pygame.mixer.Sound("victory-sound.wav")
 
 
 def start_screen():
@@ -114,7 +119,7 @@ def generate_level(level):
                 Lamp('object', x, y)
             elif level[y][x] == '*':
                 Tile('empty', x, y)
-                Coin('coin', x, y)
+                # Coin('coin', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
                 playerx, playery = x, y
@@ -137,7 +142,8 @@ tile_images = {
 
 
 tile_width = tile_height = 50
-
+character_w = 44
+character_h = 48
 
 
 class Tile(pygame.sprite.Sprite):
@@ -201,103 +207,109 @@ class Player(pygame.sprite.Sprite):
         self.y = pos_y
         # self.image = player_image
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
+            character_w * pos_x + 27, character_h * pos_y + 10)
 
     def update_down(self):
         now = pygame.time.get_ticks()
         self.index = 1
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 0:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 1:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 2:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 1:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
+        self.image = self.images[int(self.index)]
+        # print(self.image.get_width())
+        # print(self.image.get_height())
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 0:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 1:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 2:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 1:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
 
     def update_left(self):
         now = pygame.time.get_ticks()
         self.index = 4
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 3:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 4:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 5:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 4:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
+        self.image = self.images[int(self.index)]
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 3:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 4:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 5:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 4:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
 
     def update_right(self):
         now = pygame.time.get_ticks()
         self.index = 7
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 6:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 7:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 8:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 7:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
+        self.image = self.images[int(self.index)]
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 6:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 7:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 8:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 7:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
 
     def update_up(self):
         now = pygame.time.get_ticks()
         self.index = 10
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 9:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 10:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index += self.animation_speed
-            if self.index == 11:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
-        if now - self.last_update > 10:
-            self.index -= self.animation_speed
-            if self.index == 10:
-                self.image = self.images[int(self.index)]
-                self.last_update = now
+        self.image = self.images[int(self.index)]
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 9:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 10:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index += self.animation_speed
+        #     if self.index == 11:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
+        # if now - self.last_update > 10:
+        #     self.index -= self.animation_speed
+        #     if self.index == 10:
+        #         self.image = self.images[int(self.index)]
+        #         self.last_update = now
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -337,6 +349,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 Tile('empty', self.pos_x, self.pos_y)
                 CompletedLamp('object2', self.pos_x, self.pos_y)
+                sound.play()
                 self.rect = self.rect.move(-delta_x, -delta_y)
                 self.pos_x -= d_x
                 self.pos_y -= d_y
@@ -388,6 +401,7 @@ while True:
             if timer == 0 and len(c_lamp_group) != len(lamp_group):
                 end_screen()
             elif timer == 0:
+                sound2.play()
                 mapp += 1
                 if mapp != 6:
                     all_sprites = pygame.sprite.Group()
@@ -402,6 +416,7 @@ while True:
                     screen.blit(text, (16, 18))
                     drawArc(screen, YELLOW, (32, 32), 32, 5, 2 * math.pi * arc_timer / 100)
                 else:
+                    sound3.play()
                     win_screen()
     screen.fill(BLACK)
     all_sprites.draw(screen)
