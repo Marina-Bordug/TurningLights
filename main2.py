@@ -213,103 +213,21 @@ class Player(pygame.sprite.Sprite):
         now = pygame.time.get_ticks()
         self.index = 1
         self.image = self.images[int(self.index)]
-        # print(self.image.get_width())
-        # print(self.image.get_height())
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 0:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 1:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 2:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 1:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
 
     def update_left(self):
         now = pygame.time.get_ticks()
         self.index = 4
         self.image = self.images[int(self.index)]
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 3:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 4:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 5:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 4:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
 
     def update_right(self):
         now = pygame.time.get_ticks()
         self.index = 7
         self.image = self.images[int(self.index)]
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 6:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 7:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 8:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 7:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
 
     def update_up(self):
         now = pygame.time.get_ticks()
         self.index = 10
         self.image = self.images[int(self.index)]
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 9:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 10:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index += self.animation_speed
-        #     if self.index == 11:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
-        # if now - self.last_update > 10:
-        #     self.index -= self.animation_speed
-        #     if self.index == 10:
-        #         self.image = self.images[int(self.index)]
-        #         self.last_update = now
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
