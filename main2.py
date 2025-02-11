@@ -51,7 +51,7 @@ def start_screen():
 
 
 def end_screen():
-    end_text = ["Проигрышь!", "Попробуйте ещё раз!"]
+    end_text = ["Проигрыш!", "Попробуйте ещё раз!"]
 
     fon = pygame.transform.scale(load_image('bg.jpeg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
